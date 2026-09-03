@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#f8f3ed">
+<title>秦鸣 & 何伟丽｜婚礼答谢宴</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;min-height:100%;font-family:"Noto Serif SC","Songti SC","STSong",serif;color:#4d4038;background:#f8f3ed}
+body{overflow-x:hidden}
+.page{min-height:100svh;position:relative;display:flex;align-items:center;justify-content:center;padding:40px 24px}
+.cover{background:linear-gradient(180deg,#f9f4ee 0%,#f5eee6 100%);text-align:center;overflow:hidden}
+.cover:before,.cover:after{content:"";position:absolute;border:1px solid rgba(155,122,96,.22);border-radius:50%;width:260px;height:260px}
+.cover:before{top:-120px;right:-110px}.cover:after{bottom:-130px;left:-120px}
+.inner{width:min(100%,520px);position:relative;z-index:2}
+.kicker{font-size:13px;letter-spacing:6px;color:#9a806a;margin-bottom:28px}
+.cover h1{font-size:36px;font-weight:400;letter-spacing:5px;margin-bottom:18px}
+.names{font-size:24px;letter-spacing:4px;margin:12px 0 26px}
+.date{font-family:Georgia,serif;font-size:15px;letter-spacing:3px;color:#8d7664}
+.scroll{position:absolute;bottom:28px;font-size:11px;letter-spacing:3px;color:#a58d7b}
+.section-title{font-size:24px;font-weight:400;letter-spacing:3px;margin-bottom:28px}
+.invite{text-align:center;line-height:2.15;font-size:16px;letter-spacing:1px}
+.invite .signature{margin-top:30px;font-size:15px;letter-spacing:2px}
+.info{background:#fbf8f4}
+.info-card{border:1px solid rgba(140,112,90,.22);padding:30px 24px;background:rgba(255,255,255,.35)}
+.info-row{padding:16px 0;border-bottom:1px solid rgba(140,112,90,.13);display:flex;gap:15px;line-height:1.7}
+.info-row:last-child{border-bottom:0}
+.label{width:55px;flex:none;color:#9a806a;font-size:13px}
+.value{font-size:15px}
+.photos{background:#f4eee8}
+.photo-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.photo{aspect-ratio:1/1;background:#e8ddd3;border:1px solid rgba(140,112,90,.18);display:flex;align-items:center;justify-content:center;color:#9b8778;font-size:13px;letter-spacing:1px}
+.photo.large{grid-column:span 2;aspect-ratio:16/9}
+.photo span{padding:8px 14px;border:1px solid rgba(140,112,90,.25)}
+.rsvp{background:#fbf8f4}
+form{display:flex;flex-direction:column;gap:16px}
+input,select,textarea{width:100%;border:1px solid rgba(140,112,90,.25);background:#fffaf6;padding:14px 13px;border-radius:2px;font-family:inherit;font-size:14px;color:#51443b;outline:none}
+textarea{min-height:90px;resize:none}
+button{border:0;background:#7e6654;color:white;padding:14px;font-family:inherit;letter-spacing:2px;font-size:14px;cursor:pointer}
+.note{font-size:12px;color:#a18e7e;line-height:1.7}
+.end{text-align:center;background:linear-gradient(180deg,#f5eee7,#efe5db)}
+.end-main{font-size:25px;letter-spacing:3px;line-height:2}
+.end-sub{font-size:13px;color:#907967;margin-top:22px;letter-spacing:2px}
+.music{position:fixed;right:18px;top:18px;width:38px;height:38px;border-radius:50%;border:1px solid rgba(110,90,75,.3);background:rgba(255,255,255,.65);z-index:20;display:flex;align-items:center;justify-content:center;font-size:17px}
+.music.playing{animation:spin 4s linear infinite}
+.fade{opacity:0;transform:translateY(18px);transition:all .8s ease}
+.fade.show{opacity:1;transform:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:380px){.cover h1{font-size:31px}.names{font-size:21px}.invite{font-size:15px}}
+</style>
+</head>
+<body>
+
+<audio id="bgm" loop preload="none">
+  <!-- 后续把音乐文件放入 assets/music.mp3，并取消下面注释即可 -->
+  <!-- <source src="assets/music.mp3" type="audio/mpeg"> -->
+</audio>
+<button class="music" id="musicBtn" aria-label="音乐开关">♪</button>
+
+<section class="page cover">
+  <div class="inner fade">
+    <div class="kicker">婚 礼 答 谢 宴</div>
+    <h1>敬邀您来赴一场<br>迟到的婚宴</h1>
+    <div class="names">秦鸣 &nbsp;·&nbsp; 何伟丽</div>
+    <div class="date">2026 · 10 · 06</div>
+  </div>
+  <div class="scroll">SCROLL ↓</div>
+</section>
+
+<section class="page">
+  <div class="inner fade">
+    <h2 class="section-title">想与你分享</h2>
+    <div class="invite">
+      <p>我们的幸福，想与你分享。</p>
+      <p>特设一场简单的婚礼答谢宴，<br>
+      诚邀你来吃顿饭、聊聊天，<br>
+      一起分享这份喜悦。</p>
+      <p>期待与你相聚。</p>
+      <div class="signature">秦鸣 &amp; 何伟丽</div>
+    </div>
+  </div>
+</section>
+
+<section class="page info">
+  <div class="inner fade">
+    <h2 class="section-title">宴会信息</h2>
+    <div class="info-card">
+      <div class="info-row"><div class="label">日期</div><div class="value">2026年10月6日（星期二）</div></div>
+      <div class="info-row"><div class="label">时间</div><div class="value">11:30 · 午宴</div></div>
+      <div class="info-row"><div class="label">酒店</div><div class="value">杭州和达希尔顿逸林酒店</div></div>
+      <div class="info-row"><div class="label">厅房</div><div class="value">会议厅 M4</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="page photos">
+  <div class="inner fade">
+    <h2 class="section-title">我们的故事</h2>
+    <div class="photo-grid">
+      <div class="photo large"><span>封面照片 · 待替换</span></div>
+      <div class="photo"><span>照片 01 · 待替换</span></div>
+      <div class="photo"><span>照片 02 · 待替换</span></div>
+      <div class="photo"><span>照片 03 · 待替换</span></div>
+      <div class="photo"><span>照片 04 · 待替换</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="page rsvp">
+  <div class="inner fade">
+    <h2 class="section-title">赴宴登记</h2>
+    <form id="rsvpForm">
+      <input name="name" placeholder="您的姓名" required>
+      <select name="attendance" required>
+        <option value="">请选择是否到场</option>
+        <option value="到场">很高兴，到场赴宴</option>
+        <option value="无法到场">很遗憾，无法到场</option>
+      </select>
+      <input name="count" type="number" min="1" max="20" placeholder="到场人数">
+      <textarea name="message" placeholder="想对我们说的话（选填）"></textarea>
+      <button type="submit">提交赴宴信息</button>
+      <div class="note">提交后我们会根据登记信息提前安排席位。<br>统计功能上线时会接入在线数据服务。</div>
+    </form>
+  </div>
+</section>
+
+<section class="page end">
+  <div class="inner fade">
+    <div class="end-main">感谢相遇<br>期待相聚</div>
+    <div class="end-sub">秦鸣 &amp; 何伟丽 · 2026.10.06</div>
+  </div>
+</section>
+
+<script>
+const fades=document.querySelectorAll('.fade');
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('show')});
+},{threshold:.15});
+fades.forEach(el=>observer.observe(el));
+
+const bgm=document.getElementById('bgm');
+const musicBtn=document.getElementById('musicBtn');
+let playing=false;
+musicBtn.addEventListener('click',()=>{
+  if(!bgm.querySelector('source')) {
+    alert('音乐文件将在最终版中加入。');
+    return;
+  }
+  if(playing){bgm.pause();musicBtn.classList.remove('playing')}
+  else{bgm.play();musicBtn.classList.add('playing')}
+  playing=!playing;
+});
+
+document.getElementById('rsvpForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  alert('感谢您的回复！在线统计功能将在正式上线版中启用。');
+});
+</script>
+</body>
+</html>
