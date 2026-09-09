@@ -46,7 +46,7 @@ tr:last-child td{border-bottom:0}
   </div>
   <div class="table-wrap">
     <table>
-      <thead><tr><th>姓名</th><th>状态</th><th>人数</th><th>留言</th><th>时间</th></tr></thead>
+      <thead><tr><th>姓名</th><th>状态</th><th>成人</th><th>儿童</th><th>留言</th><th>时间</th></tr></thead>
       <tbody id="tbody"></tbody>
     </table>
     <div class="empty" id="empty" style="display:none">暂无登记记录</div>
@@ -64,12 +64,16 @@ tr:last-child td{border-bottom:0}
     name text not null,
     attendance text not null,
     guest_count int default 0,
+    child_count int default 0,
     message text default '',
     created_at timestamptz default now()
   );
   alter table rsvp enable row level security;
   create policy "allow insert" on rsvp for insert with check (true);
   create policy "allow select" on rsvp for select using (true);
+
+  -- 若表已建好，只需运行下面这句添加儿童人数字段：
+  -- alter table rsvp add column child_count int default 0;
 */
 
 function doLogin(){
@@ -92,7 +96,7 @@ async function loadData(){
     const rows=await res.json();
     if(!Array.isArray(rows)) throw new Error();
     document.getElementById('s-total').textContent=rows.length;
-    document.getElementById('s-guests').textContent=rows.filter(r=>r.attendance==='到场').reduce((s,r)=>s+(r.guest_count||1),0);
+    document.getElementById('s-guests').textContent=rows.filter(r=>r.attendance==='到场').reduce((s,r)=>s+(r.guest_count||1)+(r.child_count||0),0);
     document.getElementById('s-no').textContent=rows.filter(r=>r.attendance==='无法到场').length;
     document.getElementById('updateTime').textContent='更新于 '+new Date().toLocaleString('zh-CN');
     const tbody=document.getElementById('tbody');
@@ -103,6 +107,7 @@ async function loadData(){
       <td>${esc(r.name)}</td>
       <td class="${r.attendance==='到场'?'tag-yes':'tag-no'}">${esc(r.attendance)}</td>
       <td>${r.attendance==='到场'?(r.guest_count||1):'-'}</td>
+      <td>${r.attendance==='到场'?(r.child_count||0):'-'}</td>
       <td>${esc(r.message||'-')}</td>
       <td>${new Date(r.created_at).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>
     </tr>`).join('');
