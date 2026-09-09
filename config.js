@@ -5,9 +5,14 @@
 // ============================================================
 
 window.MARRY_CONFIG = {
-  supabaseUrl: 'YOUR_SUPABASE_URL',
+  supabaseUrl: 'https://kotuakobmtnjkshkdfiw.supabase.co',
   supabaseKey: 'YOUR_SUPABASE_ANON_KEY',
   adminPassword: 'qinming2026',
+
+  // GitHub Pages 在国内较慢，部署到 github.io 后自动走 jsDelivr CDN
+  // 本地预览留空即可；也可手动写死 CDN 地址
+  assetBase: '',
+  assetVersion: '6',
 
   // 封面 & 微信分享图（第 6 张：红底囍字合照）
   coverImage: 'assets/6.jpg',
