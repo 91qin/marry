@@ -17,7 +17,7 @@
 <meta property="og:image:height" content="600">
 <meta itemprop="image" content="https://cdn.jsdelivr.net/gh/91qin/marry@main/assets/share.jpg?v=4">
 
-<link rel="preload" href="assets/6.jpg" as="image" fetchpriority="high">
+<link rel="preload" href="assets/6.jpg?v=8" as="image" fetchpriority="high">
 
 <style>
 :root{--red:#8b1a1a;--red-deep:#5c1010;--gold:#c9a96e;--cream:#faf6f1;--cream2:#f4ede4;--text:#4a3f38;--muted:#9a8778}
@@ -213,23 +213,20 @@ textarea{min-height:76px;resize:none}
   </div>
 </section>
 
-<script src="config.js"></script>
+<script src="config.js?v=8"></script>
 <script>
 const cfg = window.MARRY_CONFIG || {};
 const venue = cfg.venue || {};
 const photoCount = cfg.photoCount || 17;
 const assetVer = cfg.assetVersion ? `?v=${cfg.assetVersion}` : '';
-const assetBase = cfg.assetBase || (/github\.io$/i.test(location.hostname)
-  ? 'https://cdn.jsdelivr.net/gh/91qin/marry@main'
-  : '');
 function asset(path) {
   const p = path.replace(/^\//, '');
-  return assetBase ? `${assetBase}/${p}${assetVer}` : `${p}${assetVer}`;
+  return cfg.assetBase ? `${cfg.assetBase.replace(/\/$/, '')}/${p}${assetVer}` : `${p}${assetVer}`;
 }
 
-/* 封面 & 音乐走 CDN */
+/* 封面 & 音乐：同源加载，避免 CDN 缓存/失效 */
 const coverImg = document.getElementById('coverImg');
-coverImg.src = asset('assets/6.jpg');
+coverImg.src = asset(cfg.coverImage || 'assets/6.jpg');
 const bgmEl = document.getElementById('bgm');
 bgmEl.src = asset('assets/music.mp3');
 function onImgLoaded(img) { img.classList.add('loaded'); }
@@ -258,7 +255,9 @@ for (let i = 1; i <= photoCount; i++) {
   img.dataset.src = src;
   img.alt = `照片 ${i}`;
   img.decoding = 'async';
+  if (i <= 3) img.loading = 'eager';
   img.onload = () => { img.classList.add('loaded'); bg.classList.add('loaded'); };
+  img.onerror = () => { img.src = `assets/${i}.jpg`; bg.src = `assets/${i}.jpg`; };
 
   slide.appendChild(bg);
   slide.appendChild(img);
@@ -277,9 +276,8 @@ function loadGalleryImg(pair) {
   pair.bg.src = pair.bg.dataset.src;
 }
 
-/* 首张立即加载，其余滑到附近再加载 */
-loadGalleryImg(galleryImgs[0]);
-loadGalleryImg(galleryImgs[1]);
+/* 前 3 张立即加载，其余滑到附近再加载 */
+galleryImgs.slice(0, 3).forEach(loadGalleryImg);
 
 const imgLoader = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) loadGalleryImg(galleryImgs[+e.target.dataset.idx]); });
@@ -335,13 +333,26 @@ function setMusicUI(on) {
 
 function tryPlay() {
   if (!playing) return;
+  bgm.muted = true;
   const p = bgm.play();
-  if (p) p.then(() => { setMusicUI(true); musicBooted = true; }).catch(() => setMusicUI(false));
+  if (!p) return;
+  p.then(() => {
+    bgm.muted = false;
+    setMusicUI(true);
+    musicBooted = true;
+  }).catch(() => {
+    bgm.muted = false;
+    setMusicUI(false);
+  });
 }
 
 function bootMusic() {
-  if (musicBooted || !playing) return;
-  tryPlay();
+  if (!playing) return;
+  if (typeof WeixinJSBridge !== 'undefined') {
+    WeixinJSBridge.invoke('getNetworkType', {}, tryPlay);
+  } else {
+    tryPlay();
+  }
 }
 
 bgm.addEventListener('error', () => { setMusicUI(false); toast('音乐文件未找到，请确认已上传 music.mp3'); });
@@ -352,10 +363,7 @@ musicBtn.onclick = e => {
   else { playing = true; tryPlay(); }
 };
 
-document.addEventListener('WeixinJSBridgeReady', () => {
-  bootMusic();
-  if (typeof WeixinJSBridge !== 'undefined') WeixinJSBridge.invoke('getNetworkType', {}, bootMusic);
-}, false);
+document.addEventListener('WeixinJSBridgeReady', bootMusic, false);
 ['canplay', 'canplaythrough'].forEach(ev => bgm.addEventListener(ev, bootMusic));
 document.addEventListener('DOMContentLoaded', bootMusic);
 window.addEventListener('load', bootMusic);
@@ -387,9 +395,14 @@ document.getElementById('rsvpForm').addEventListener('submit', async e => {
   const fd = new FormData(e.target);
   const name = fd.get('name').trim();
   const attendance = fd.get('attendance');
-  const guest_count = attendance === '到场' ? Number(fd.get('guest_count') || 1) : 0;
-  const child_count = attendance === '到场' ? Number(fd.get('child_count') || 0) : 0;
-  const message = (fd.get('message') || '').trim();
+  const adults = Math.max(1, Number(fd.get('guest_count') || 1));
+  const children = Math.max(0, Number(fd.get('child_count') || 0));
+  const guest_count = attendance === '到场' ? adults + children : 0;
+  let message = (fd.get('message') || '').trim();
+  if (attendance === '到场' && children > 0) {
+    const tag = `【成人${adults}人，儿童${children}人】`;
+    message = message ? `${tag} ${message}` : tag;
+  }
   if (!name || !attendance) { toast('请填写完整信息'); return; }
 
   if (!cfg.supabaseUrl || cfg.supabaseUrl.includes('YOUR_')) {
@@ -406,7 +419,7 @@ document.getElementById('rsvpForm').addEventListener('submit', async e => {
     const res = await fetch(`${cfg.supabaseUrl}/rest/v1/rsvp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'apikey': cfg.supabaseKey, 'Authorization': `Bearer ${cfg.supabaseKey}`, 'Prefer': 'return=minimal' },
-      body: JSON.stringify({ name, attendance, guest_count, child_count, message })
+      body: JSON.stringify({ name, attendance, guest_count, message })
     });
     if (!res.ok) {
       const err = await res.text().catch(() => '');
@@ -416,7 +429,7 @@ document.getElementById('rsvpForm').addEventListener('submit', async e => {
     e.target.reset(); countFields.style.display = 'none';
     toast('提交成功，感谢您的回复！');
   } catch {
-    toast('提交失败，请确认 config.js 已上传到 GitHub');
+    toast('提交失败，请稍后重试');
   } finally {
     btn.disabled = false; btn.textContent = '确认提交';
   }

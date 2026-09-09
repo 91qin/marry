@@ -9,10 +9,9 @@ window.MARRY_CONFIG = {
   supabaseKey: 'sb_publishable_Qz5Yw2iO3WxKYBnrKUoDyw_B8Hrjfms',
   adminPassword: 'qinming2026',
 
-  // GitHub Pages 在国内较慢，部署到 github.io 后自动走 jsDelivr CDN
-  // 本地预览留空即可；也可手动写死 CDN 地址
+  // 资源路径留空=走本站同源（推荐）；如需 CDN 再手动填写
   assetBase: '',
-  assetVersion: '7',
+  assetVersion: '8',
 
   // 封面 & 微信分享图（第 6 张：红底囍字合照）
   coverImage: 'assets/6.jpg',

@@ -54,7 +54,7 @@ tr:last-child td{border-bottom:0}
   <button class="refresh" onclick="loadData()">↻ 刷新数据</button>
 </div>
 
-<script src="config.js"></script>
+<script src="config.js?v=8"></script>
 <script>
 /*
   ===== 在 Supabase SQL Editor 中运行以下语句（只需一次）=====
@@ -76,6 +76,12 @@ tr:last-child td{border-bottom:0}
   -- alter table rsvp add column child_count int default 0;
 */
 
+function rsvpDetail(r){
+  const m=(r.message||'').match(/【成人(\d+)人，儿童(\d+)人】/);
+  if(m) return {adult:+m[1],child:+m[2],note:(r.message||'').replace(/【成人\d+人，儿童\d+人】\s*/,'').trim()||'-'};
+  return {adult:r.guest_count||1,child:r.child_count||0,note:r.message||'-'};
+}
+
 function doLogin(){
   const cfg=window.MARRY_CONFIG||{};
   if(document.getElementById('pwd').value===cfg.adminPassword){
@@ -96,21 +102,24 @@ async function loadData(){
     const rows=await res.json();
     if(!Array.isArray(rows)) throw new Error();
     document.getElementById('s-total').textContent=rows.length;
-    document.getElementById('s-guests').textContent=rows.filter(r=>r.attendance==='到场').reduce((s,r)=>s+(r.guest_count||1)+(r.child_count||0),0);
+    document.getElementById('s-guests').textContent=rows.filter(r=>r.attendance==='到场').reduce((s,r)=>s+(r.guest_count||1),0);
     document.getElementById('s-no').textContent=rows.filter(r=>r.attendance==='无法到场').length;
     document.getElementById('updateTime').textContent='更新于 '+new Date().toLocaleString('zh-CN');
     const tbody=document.getElementById('tbody');
     const empty=document.getElementById('empty');
     if(!rows.length){ tbody.innerHTML=''; empty.style.display='block'; return; }
     empty.style.display='none';
-    tbody.innerHTML=rows.map(r=>`<tr>
+    tbody.innerHTML=rows.map(r=>{
+      const d=rsvpDetail(r);
+      return `<tr>
       <td>${esc(r.name)}</td>
       <td class="${r.attendance==='到场'?'tag-yes':'tag-no'}">${esc(r.attendance)}</td>
-      <td>${r.attendance==='到场'?(r.guest_count||1):'-'}</td>
-      <td>${r.attendance==='到场'?(r.child_count||0):'-'}</td>
-      <td>${esc(r.message||'-')}</td>
+      <td>${r.attendance==='到场'?d.adult:'-'}</td>
+      <td>${r.attendance==='到场'?d.child:'-'}</td>
+      <td>${esc(d.note)}</td>
       <td>${new Date(r.created_at).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>
-    </tr>`).join('');
+    </tr>`;
+    }).join('');
   }catch{ alert('加载失败，请检查 config.js 配置'); }
 }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
